@@ -1,0 +1,34 @@
+{
+  "name": "swapper",
+  "version": "1",
+  "description": "app to swap cryptos",
+  "main": "index.js",
+  "repository": "https://github.com/Heyzel/SolidityCourseHomework4.git",
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage"
+  },
+  "author": "Heyzel <heyzelm7@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "@nomiclabs/hardhat-etherscan": "^3.0.3",
+    "@nomiclabs/hardhat-waffle": "^2.0.2",
+    "chai": "^4.3.6",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.4",
+    "hardhat": "^2.9.1",
+    "hardhat-deploy": "^0.8.6",
+    "hardhat-deploy-ethers": "^0.3.0-beta.13",
+    "hardhat-gas-trackooor": "^1.0.2",
+    "solidity-coverage": "^0.7.19"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^0.4.0",
+    "@openzeppelin/contracts": "^4.5.0",
+    "@openzeppelin/contracts-upgradeable": "^4.5.1",
+    "@openzeppelin/hardhat-upgrades": "^1.14.0",
+    "dotenv": "^16.0.0"
+  }
+}
