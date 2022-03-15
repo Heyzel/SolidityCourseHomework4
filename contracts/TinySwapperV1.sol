@@ -20,10 +20,13 @@ contract TinySwapperV1 is OwnableUpgradeable  {
 
     // Receives `fee` of the total ETH used for swaps   
     address public feeRecipient;
+
     ISwapRouter public constant swapRouter = ISwapRouter(0xE592427A0AEce92De3Edee1F18E0157C05861564);
-    address private constant WETH9 = 0xd0A1E359811322d97991E03f863a0C30C2cF029C;
+    address private constant WETH9 = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     function initialize(address _feeRecipient, uint16 _fee) external initializer {
+        __Ownable_init();
+
         require(_feeRecipient != address(0));
         require(_fee > 0);
         feeRecipient = _feeRecipient;
@@ -39,7 +42,7 @@ contract TinySwapperV1 is OwnableUpgradeable  {
     */
     function swap(address[] memory _tokens, uint[] memory _percentages) external payable {
         require(msg.value > 0, "Insufficient ETH");
-        require(_tokens.length == _percentages.length, "tokens and percentages does not have the same size");
+        require(_tokens.length == _percentages.length, "Tokens and percentages does not have the same size");
 
         // Calculate ETH to make the swaps
         uint moneyToSwap = msg.value.sub(msg.value.mul(fee).div(10000));
