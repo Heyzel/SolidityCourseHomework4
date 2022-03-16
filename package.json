@@ -32,6 +32,7 @@
     "@openzeppelin/contracts": "^4.5.0",
     "@openzeppelin/contracts-upgradeable": "^4.5.1",
     "@openzeppelin/hardhat-upgrades": "^1.14.0",
+    "axios": "^0.26.1",
     "dotenv": "^16.0.0",
     "paraswap": "^5.1.0"
   }

@@ -5,7 +5,7 @@ const { GetGas } = require('hardhat-gas-trackooor/dist/src/GetGas');
 //const { ethers } = require('ethers');
 const { fixture } = deployments;
 
-const paraSwap = new ParaSwap();
+const paraSwap = new ParaSwap(1); 
 const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 const LINK_ADDRESS = "0x514910771AF9Ca656af840dff83E8264EcF986CA";
 const USDT_ADDRESS = "0xdac17f958d2ee523a2206206994597c13d831ec7";
@@ -103,5 +103,43 @@ describe('TinySwapperV1 contract', () => {
                 expect(await appV2.owner()).to.be.equal(deployerSigner._address);
             });
         });
+
+        describe('Tests for ParaSwap', () => {
+            it('', async () => {
+    
+                const tokens = await paraSwap.getTokens();
+    
+                const accountImpersonate = '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8';
+    
+                await hre.network.provider.request({
+                    method: "hardhat_impersonateAccount",
+                    params: [accountImpersonate],
+                });
+                
+                const impersonateSigner = await ethers.getSigner(accountImpersonate);
+    
+                const usrAddress = impersonateSigner.address;
+                const from = tokens[0].address;
+                const to = tokens[1].address;
+                const _amount = '1000000000000000000';
+    
+                const priceRoute = await paraSwap.getRate(from, to, _amount, usrAddress);
+    
+                const mintAmount = priceRoute.destAmount * (1 - 1/100).toFixed(0);
+    
+                const txObject = await paraSwap.buildTx(
+                    from,
+                    to,
+                    _amount,
+                    mintAmount,
+                    priceRoute,
+                    usrAddress,
+                    'ignoreChecks=true&ignoreGasEstimate=true'
+                );
+    
+                await appV2.connect(impersonateSigner).swapWithParaswap(txObject.data);
+                
+            });
+        });   
     });
 });
