@@ -7,7 +7,9 @@
   "scripts": {
     "build": "hardhat compile",
     "test": "hardhat test",
-    "test:coverage": "hardhat coverage"
+    "test:coverage": "hardhat coverage",
+    "deploy": "hardhat deploy --tags TinySwapperV1",
+    "upgrade": "hardhat deploy --tags TinySwapperV2"
   },
   "author": "Heyzel <heyzelm7@gmail.com>",
   "license": "MIT",
@@ -30,6 +32,7 @@
     "@openzeppelin/contracts": "^4.5.0",
     "@openzeppelin/contracts-upgradeable": "^4.5.1",
     "@openzeppelin/hardhat-upgrades": "^1.14.0",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "paraswap": "^5.1.0"
   }
 }

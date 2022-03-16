@@ -1,9 +1,11 @@
+const { ParaSwap } = require('paraswap');
 const { expect } = require('chai');
 const { ethers } = require('hardhat');
 const { GetGas } = require('hardhat-gas-trackooor/dist/src/GetGas');
 //const { ethers } = require('ethers');
 const { fixture } = deployments;
 
+const paraSwap = new ParaSwap();
 const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 const LINK_ADDRESS = "0x514910771AF9Ca656af840dff83E8264EcF986CA";
 const USDT_ADDRESS = "0xdac17f958d2ee523a2206206994597c13d831ec7";
@@ -84,6 +86,21 @@ describe('TinySwapperV1 contract', () => {
                 expect(parseInt(await link.balanceOf(buyerSigner._address))).to.be.greaterThan(linkBefore);
                 expect(parseInt(await usdt.balanceOf(buyerSigner._address))).to.be.greaterThan(usdtBefore);
                 
+            });
+        });
+    });
+
+    describe('Upgrading TinySwapper', () => {
+        let appV2;
+
+        beforeEach(async () => {
+            await fixture(['TinySwapperV2']);
+            appV2 = await ethers.getContract('TinySwapperV1', await app.owner());
+        });
+
+        describe("Deployment", () => {
+            it('Should set the right owner', async () => {
+                expect(await appV2.owner()).to.be.equal(deployerSigner._address);
             });
         });
     });
