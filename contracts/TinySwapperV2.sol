@@ -13,7 +13,8 @@ contract TinySwapperV2 is TinySwapperV1 {
 
     /**
     * @notice Swap tokens according to the percentages in `_percentages`
-    * @dev The tokens are sends to contract and the contract send tokebs to msg.sender
+    * @dev The tokens are sends to contract and the contract send tokebs to msg.sender.
+    * The percentages have 2 decimals precision (i.e. 5000 = 50%, 6415 = 64.15%)
     * @param `_data` is the data for do the swap with the paraswap contract, `_percentages` are
     * the percentages of eth that will be invested in each token, `_tokens` are the addresses
     * of the tokens that will be swapped
@@ -44,6 +45,8 @@ contract TinySwapperV2 is TinySwapperV1 {
             (bool success2) = token.transfer(msg.sender, token.balanceOf(address(this)));
 
             require(success2, "Error in the tokens transfer");
+
+            emit SwapSuccess(amount, token.balanceOf(address(this)), _tokens[i]);
         }
         // Send fee to `feeRecipient`
         (bool sc, ) = feeRecipient.call{ value: (address(this).balance) }("");
