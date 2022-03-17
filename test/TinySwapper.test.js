@@ -105,10 +105,10 @@ describe('TinySwapperV1 contract', () => {
         });
 
         describe('Tests for ParaSwap', () => {
-            it('', async () => {
+            it('Should swap tokens with the best DEX', async () => {
     
                 const tokens = await paraSwap.getTokens();
-    
+
                 const accountImpersonate = '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8';
     
                 await hre.network.provider.request({
@@ -120,25 +120,86 @@ describe('TinySwapperV1 contract', () => {
     
                 const usrAddress = impersonateSigner.address;
                 const from = tokens[0].address;
-                const to = tokens[1].address;
+                const to = tokens[7].address;
+                const to2 = tokens[5].address;
                 const _amount = '1000000000000000000';
-    
+
+                /**
+                * @notice This code is commented because sometimes de API does not works,
+                * so I use the transaction objects that I get when the API works
+                * @dev The parameters for these objects are srcToken = ETH address, destToken = AAVE address, 
+                * srcAmount = 1000000000000000000 (1 ETH) for the txObjectAux, and srcToken = ETH address,
+                * destToken = DAI address, srcAmount = 1000000000000000000 (1 ETG) for the txObjectAux2
+                */
+
+                /*
                 const priceRoute = await paraSwap.getRate(from, to, _amount, usrAddress);
-    
-                const mintAmount = priceRoute.destAmount * (1 - 1/100).toFixed(0);
-    
+                const priceRoute2 = await paraSwap.getRate(from, to2, _amount, usrAddress);
+
+                const minAmount = priceRoute.destAmount * (1 - 1/100).toFixed(0);
+                const minAmount2 = priceRoute2.destAmount * (1 - 1/100).toFixed(0);
+                
                 const txObject = await paraSwap.buildTx(
                     from,
                     to,
                     _amount,
-                    mintAmount,
+                    minAmount,
                     priceRoute,
                     usrAddress,
                     'ignoreChecks=true&ignoreGasEstimate=true'
                 );
-    
-                await appV2.connect(impersonateSigner).swapWithParaswap(txObject.data);
+
+                const txObject2 = await paraSwap.buildTx(
+                    from,
+                    to2,
+                    _amount,
+                    minAmount2,
+                    priceRoute2,
+                    usrAddress,
+                    'ignoreChecks=true&ignoreGasEstimate=true'
+                );
+                */
+
+                const txObjectAux = {
+                    from: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    to: '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57',
+                    value: '1000000000000000000',
+                    data: '0x64466805000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000007fc66500c84a76ad7e9c93437bfc5ac33e2ddae90000000000000000000000000000000000000000000000000de0b6b3a7640000000000000000000000000000000000000000000000000001164889cbdbe05000000000000000000000000000def1c0ded9bec7f1a1670819833240f027b25eff00000000000000000000000000000000000000000000000000000000000000c000000000000000000000000000000000000000000000000000000000000001c00000000000000000000000007fc66500c84a76ad7e9c93437bfc5ac33e2ddae9000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc20000000000000000000000000000000000000000000000011921ecb370a03cf80000000000000000000000000000000000000000000000000e043da61725000000000000000000000000000056178a0d5f301baf6cf3e1cd53d9863437345bf9000000000000000000000000def171fe48cf0115b1d80b88dc8eab59176fee57000000000000000000000000ea674fdde714fd979de3edf0f56aa9716b898ec80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006232b19201ffffffffffffffffffffffffffffffffffffff14e3c5816232b1380000002b0000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000001b3cbb03c256935f896e9eb78d77af1a06de2a570520a96e7b4dfd10cc95473ee66d5223a825ceef73cb89f6ba8441dd9bfe66394721920a4300a258135f48ff03',
+                    gasPrice: '22000000000',
+                    gas: '494337',
+                    chainId: 1
+                  }
+
+                const txObjectAux2 = {
+                    from: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+                    to: '0xDEF171Fe48CF0115B1d80b88dc8eAB59176FEe57',
+                    value: '1000000000000000000',
+                    data: '0x0b86a4c1000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee0000000000000000000000000000000000000000000000000de0b6b3a764000000000000000000000000000000000000000000000000000000000000a4ad00ed000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc200000000000000000000000000000000000000000000000000000000000000a00000000000000000000000000000000000000000000000000000000000000001000000000000000000004de5a478c2975ab1ea89e8196811f51a7b7ade33eb11',
+                    gasPrice: '33000000000',
+                    gas: '144051',
+                    chainId: 1
+                  }
+
+                const IERC20 = require("../abi/ERC20.json");
+                const toContract = await hre.ethers.getContractAt(IERC20, to);
+                const to2Contract = await hre.ethers.getContractAt(IERC20, to2);
+
+                const toContractBalanceBefore = parseInt(await toContract.balanceOf(usrAddress));
+                const to2ContractBalanceBefore = parseInt(await to2Contract.balanceOf(usrAddress));
+                console.log("Balance of first token before swap: " + toContractBalanceBefore + ", Balance of second token before swap: " + to2ContractBalanceBefore);
+
+                const data = [txObjectAux.data, txObjectAux2.data];
+                const percentages = [5000, 5000];
+                const _tokens = [to, to2];
+
+                await appV2.connect(impersonateSigner).swapWithParaswap(data, percentages, _tokens, {value: ethers.utils.parseEther("2.002002002002002002")});
                 
+                const toContractBalanceAfter = parseInt(await toContract.balanceOf(usrAddress));
+                const to2ContractBalanceAfter = parseInt(await to2Contract.balanceOf(usrAddress));
+                console.log("Balance of first token after swap: " + toContractBalanceAfter + ", Balance of second token after swap: " + to2ContractBalanceAfter);
+
+                expect(toContractBalanceAfter).to.be.greaterThan(toContractBalanceBefore);
+                expect(to2ContractBalanceAfter).to.be.greaterThan(to2ContractBalanceBefore);
             });
         });   
     });
